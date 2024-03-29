@@ -3,13 +3,17 @@ variable "region" {
 }
 
 variable "rds_username" {
-  description = "username for the master user in RDS instance"
+  description = "Username for the master user in RDS instance"
 }
 
 variable "rds_password" {
-  description = "password for the master user in RDS instance"
+  description = "Password for the master user in RDS instance"
 }
 
 variable "rds_database" {
-  description = "database name for the RDS"
+  description = "Database name for the RDS"
+}
+
+variable "s3_bucket" {
+  description = "S3 bucket for AVRO backup"
 }
