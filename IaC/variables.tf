@@ -9,3 +9,7 @@ variable "rds_username" {
 variable "rds_password" {
   description = "password for the master user in RDS instance"
 }
+
+variable "rds_database" {
+  description = "database name for the RDS"
+}

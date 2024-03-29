@@ -7,14 +7,15 @@ This README file provides an overview of the ETL (Extract, Transform, Load) pipe
 The ETL pipeline architecture consists of the following components:
 
 + **RDS**: MySQL in RDS serves as the target Database.
++ **AWS Glue**: AWS Glue is utilized for database connection and eventually for ETL job orchestration, and serverless extract, transform, load (ETL) capability used for storing AVRO backups dumps in S3.
 
 ## Environment Variables
 
 The following environment variables are required for configuring this architecture:
 
-- `TF_rds_username`: This variable represents the master username for accessing the target MySQL database.
-- `TF_rds_password`: This variable contains the password for accessing the target MySQL database.
-
+- `TF_VAR_rds_username`: This variable represents the master username for accessing the target MySQL database.
+- `TF_VAR_rds_password`: This variable contains the password for accessing the target MySQL database.
+- `TF_VAR_rds_database`: This variable contains the database named used for the MySQL database.
 
 ## Usage
 
