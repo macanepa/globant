@@ -16,7 +16,7 @@ def lambda_handler(event, context):
     session = get_boto_session()
     con = wr.mysql.connect("globant_connection", boto3_session=session)
 
-    data = event['body']
+    data = json.loads(event['body'])
     df = pd.DataFrame.from_dict(data['records'])
 
     try:
