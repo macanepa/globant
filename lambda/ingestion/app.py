@@ -18,8 +18,31 @@ def lambda_handler(event, context):
 
         data = json.loads(event['body'])
         df = pd.DataFrame.from_dict(data['records'])
+        if df.shape[0] > 1000:
+            return {
+                'statusCode': 500,
+                'body': json.dumps({'message': 'Exceeded 1000 records limit'})
+            }
 
         with wr.mysql.connect("globant_connection", boto3_session=session) as con:
+            query = f"DESCRIBE {data['table']};"
+            table_schema = wr.mysql.read_sql_query(query, con=con)
+
+            column_data_types = {}
+            for row in table_schema.itertuples():
+                column_name = row[1]
+                data_type = row[2]
+                column_data_types[column_name] = data_type
+
+            columns = list(column_data_types.keys())
+            df = df[columns]
+
+            df_with_nan = df[df.isnull().any(axis=1)]
+            count_incorrect_records = df_with_nan.shape[0]
+
+            df = df.dropna()
+            count_correct_records = df.shape[0]
+
             wr.mysql.to_sql(
                 df=df,
                 table=data['table'],
@@ -30,7 +53,7 @@ def lambda_handler(event, context):
 
         return {
             'statusCode': 200,
-            'body': json.dumps({'message': 'Data successfully inserted'})
+            'body': json.dumps({'message': 'Data successfully inserted', 'records_with_errors': count_incorrect_records, 'records_upserted': count_correct_records})
         }
     except Exception as err:
         logging.error(str(err))
@@ -54,6 +77,9 @@ if __name__ == '__main__':
                 'id': 2,
                 'department': 'wawa'
             },
+            {
+                'id': 3
+            }
         ]
     }
 

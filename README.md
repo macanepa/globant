@@ -49,6 +49,9 @@ Upsert (based on key columns) records in batch to the RDS database.
 
 This method requires the `table`, `schema` and an array of the `records` to ingest.
 
+> [!NOTE]  
+> If any record is missing a field, that record will be excluded.
+
 Example:
 ``` bash
 curl --request POST \
@@ -75,8 +78,9 @@ Backup a table in S3 bucket using AVRO format.
 This method requires the `table` and `schema`.
 There is an optional parameter `prefix` which is the prefix of the AVRO file. If `prefix` is not provided, it will use the current datetime instead.
 
-The backup file will be stored in the following path
-`s3://{{BUCKET_NAME}}/{{TABLE_NAME}}/{{prefix}}`
+
+> [!NOTE]  
+> The backup file will be stored in the following path `s3://{{BUCKET_NAME}}/{{TABLE_NAME}}/{{prefix}}`
 
 Example:
 ``` bash
@@ -95,6 +99,9 @@ curl --request POST \
 Restore a table using an AVRO backup.
 
 This method requires the `table` and `schema` and `prefix` of the AVRO file (the same used when generating the backup).
+
+> [!WARNING]  
+> This will overwrite the current table with the backup The `id` will be set as primary key.
 
 Example:
 ``` bash

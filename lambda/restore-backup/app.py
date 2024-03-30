@@ -41,6 +41,12 @@ def lambda_handler(event, context):
                 mode="overwrite"
             )
 
+            # make sure to set id as primary key
+            cursor = con.cursor()
+            sql = f"ALTER TABLE {schema}.{table} MODIFY id INT PRIMARY KEY"
+            cursor.execute(sql)
+            con.commit()
+
         return {
             'statusCode': 200,
             'body': json.dumps({'message': 'Table restored successfully'})
