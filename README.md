@@ -2,12 +2,18 @@
 
 This README file provides an overview of the ETL (Extract, Transform, Load) pipeline architecture implemented on AWS.
 
+## Metabase Dashboard Demo
+Here is a public dashboard that displays some insights of the data used in this project.
+
+https://metabase.databam.cl/public/dashboard/810e3558-5fc6-4e9e-879e-dde76b51a0d2
+
+
 ## Architecture Overview
 
 The ETL pipeline architecture consists of the following components:
 
 + **RDS**: MySQL in RDS serves as the target Database.
-+ **AWS Glue**: AWS Glue is utilized for database connection and eventually for ETL job orchestration, and serverless extract, transform, load (ETL) capability used for storing AVRO backups dumps in S3.
++ **AWS Glue**: AWS Glue is utilized for database connection
 + **AWS Lambda**: Lambda functions are employed for serverless execution of API ingestion.
 + **ECR**: Container registry storing lambda procedures as docker images.
 + **API Gateway**: Allow batch ingestion & backup through REST API.
@@ -39,7 +45,7 @@ An API has been created in API Gateway. Look for the generated `endpoint` and th
 <hr>
 
 #### Ingestion
-Upsert (based on `id` column) records in batch to the RDS database.
+Upsert (based on key columns) records in batch to the RDS database.
 
 This method requires the `table`, `schema` and an array of the `records` to ingest.
 
