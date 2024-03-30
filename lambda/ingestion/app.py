@@ -13,13 +13,13 @@ def get_boto_session():
 
 
 def lambda_handler(event, context):
-    session = get_boto_session()
-    con = wr.mysql.connect("globant_connection", boto3_session=session)
-
-    data = json.loads(event['body'])
-    df = pd.DataFrame.from_dict(data['records'])
-
     try:
+        session = get_boto_session()
+        con = wr.mysql.connect("globant_connection", boto3_session=session)
+
+        data = json.loads(event['body'])
+        df = pd.DataFrame.from_dict(data['records'])
+
         wr.mysql.to_sql(
             df=df,
             table=data['table'],
@@ -27,11 +27,21 @@ def lambda_handler(event, context):
             con=con,
             mode="upsert_duplicate_key"
         )
+
+        return {
+            'statusCode': 200,
+            'body': json.dumps('Data successfully inserted')
+        }
     except Exception as err:
         logging.error(str(err))
+        return {
+            'statusCode': 500,
+            'body': json.dumps('Error inserting data')
+        }
 
 
 if __name__ == '__main__':
+    from pprint import pprint
     body = {
         'table': 'departments',
         'schema': 'globant',
@@ -47,5 +57,6 @@ if __name__ == '__main__':
         ]
     }
 
-    event = {'body': body}
-    lambda_handler(event, {})
+    event = {'body': json.dumps(body)}
+    response = lambda_handler(event, {})
+    pprint(response)
