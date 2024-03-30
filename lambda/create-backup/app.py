@@ -33,8 +33,12 @@ def lambda_handler(event, context):
 
             s3 = session.client('s3')
             bucket_name = 'globant.backup'
-            current_date = datetime.today().date()
-            file_name = f'{current_date.strftime("%Y-%m-%d")}.avro'
+            current_date = datetime.now()
+
+            file_name = data.get(
+                'prefix') or f'{current_date.strftime("%Y-%m-%d %H:%M:%S")}'
+            file_name = f'{data["table"]}/{file_name}.avro'
+
             s3.put_object(Bucket=bucket_name, Key=file_name,
                           Body=buffer.getvalue())
 

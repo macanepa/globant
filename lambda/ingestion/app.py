@@ -30,13 +30,13 @@ def lambda_handler(event, context):
 
         return {
             'statusCode': 200,
-            'body': json.dumps('Data successfully inserted')
+            'body': json.dumps({'message': 'Data successfully inserted'})
         }
     except Exception as err:
         logging.error(str(err))
         return {
             'statusCode': 500,
-            'body': json.dumps('Error inserting data')
+            'body': json.dumps({'message': 'Error inserting data'})
         }
 
 

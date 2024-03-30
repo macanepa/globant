@@ -1,7 +1,7 @@
 resource "aws_iam_policy" "policy-globant_lambda" {
   name        = "globant_lambda"
   path        = "/"
-  description = "Allow * for AWS Glue and S3"
+  description = "Allow * for AWS Glue, S3, and CloudWatch Logs"
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -9,6 +9,9 @@ resource "aws_iam_policy" "policy-globant_lambda" {
         Action = [
           "glue:*",
           "s3:*",
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
         ]
         Effect   = "Allow"
         Resource = "*"
