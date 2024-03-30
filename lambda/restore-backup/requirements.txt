@@ -1,0 +1,4 @@
+polars
+boto3
+awswrangler
+pymysql

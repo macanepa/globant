@@ -15,18 +15,18 @@ def get_boto_session():
 def lambda_handler(event, context):
     try:
         session = get_boto_session()
-        con = wr.mysql.connect("globant_connection", boto3_session=session)
 
         data = json.loads(event['body'])
         df = pd.DataFrame.from_dict(data['records'])
 
-        wr.mysql.to_sql(
-            df=df,
-            table=data['table'],
-            schema=data['schema'],
-            con=con,
-            mode="upsert_duplicate_key"
-        )
+        with wr.mysql.connect("globant_connection", boto3_session=session) as con:
+            wr.mysql.to_sql(
+                df=df,
+                table=data['table'],
+                schema=data['schema'],
+                con=con,
+                mode="upsert_duplicate_key"
+            )
 
         return {
             'statusCode': 200,

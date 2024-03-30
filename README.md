@@ -76,7 +76,7 @@ This method requires the `table` and `schema`.
 There is an optional parameter `prefix` which is the prefix of the AVRO file. If `prefix` is not provided, it will use the current datetime instead.
 
 The backup file will be stored in the following path
-`s3://{{BUCKET_NAME}}/{{TABLE_NAME}}/{{prefix}}.avro`
+`s3://{{BUCKET_NAME}}/{{TABLE_NAME}}/{{prefix}}`
 
 Example:
 ``` bash
@@ -86,6 +86,24 @@ curl --request POST \
   --header 'x-api-key: {{API_KEY}}' \
   --data '{
 	"table": "departments",
+	"schema": "globant",
+	"prefix": "my_backup"
+}'
+```
+
+#### Restore Backup
+Restore a table using an AVRO backup.
+
+This method requires the `table` and `schema` and `prefix` of the AVRO file (the same used when generating the backup).
+
+Example:
+``` bash
+curl --request POST \
+  --url {{ENDPOINT}}/deploy/restore-backup \
+  --header 'Content-Type: application/json' \
+  --header 'x-api-key: {{API_KEY}}' \
+  --data '{
+	"table": "jobs",
 	"schema": "globant",
 	"prefix": "my_backup"
 }'

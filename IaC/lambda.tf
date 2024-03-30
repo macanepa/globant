@@ -14,5 +14,27 @@ resource "aws_lambda_function" "create-backup" {
   memory_size   = 1024
   timeout       = 60
   package_type  = "Image"
+
+  environment {
+    variables = {
+      BUCKET_NAME = var.s3_bucket
+    }
+  }
+}
+
+resource "aws_lambda_function" "restore-backup" {
+  function_name = "restore-backup"
+  role          = aws_iam_role.iam_role-globant_lambda.arn
+  image_uri     = "${local.account_id}.dkr.ecr.us-east-1.amazonaws.com/restore-backup:latest"
+  memory_size   = 1024
+  timeout       = 60
+  package_type  = "Image"
+
+  environment {
+    variables = {
+      BUCKET_NAME = var.s3_bucket
+    }
+  }
+
 }
 

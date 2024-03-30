@@ -5,6 +5,7 @@ from boto3 import Session
 import logging
 import io
 from datetime import datetime
+from os import environ
 
 
 def get_boto_session():
@@ -17,41 +18,35 @@ def get_boto_session():
 def lambda_handler(event, context):
     try:
         session = get_boto_session()
-        con = wr.mysql.connect("globant_connection", boto3_session=session)
 
         data = json.loads(event['body'])
-        df = wr.mysql.read_sql_table(
-            table=data['table'],
-            schema=data['schema'],
-            con=con
-        )
+        with wr.mysql.connect("globant_connection", boto3_session=session) as con:
+            df = wr.mysql.read_sql_table(
+                table=data['table'],
+                schema=data['schema'],
+                con=con
+            )
 
-        try:
-            df_polars = pl.from_pandas(df)
-            buffer = io.BytesIO()
-            df_polars.write_avro(buffer)
+        df_polars = pl.from_pandas(df)
+        buffer = io.BytesIO()
+        df_polars.write_avro(buffer)
 
-            s3 = session.client('s3')
-            bucket_name = 'globant.backup'
-            current_date = datetime.now()
+        s3 = session.client('s3')
+        bucket_name = environ['BUCKET_NAME']
+        current_date = datetime.now()
 
-            file_name = data.get(
-                'prefix') or f'{current_date.strftime("%Y-%m-%d %H:%M:%S")}'
-            file_name = f'{data["table"]}/{file_name}.avro'
+        file_name = data.get(
+            'prefix') or f'{current_date.strftime("%Y-%m-%d %H:%M:%S")}'
+        file_name = f'{data["table"]}/{file_name}'
 
-            s3.put_object(Bucket=bucket_name, Key=file_name,
-                          Body=buffer.getvalue())
+        s3.put_object(Bucket=bucket_name, Key=file_name,
+                      Body=buffer.getvalue())
 
-            return {
-                'statusCode': 200,
-                'body': json.dumps({'message': 'Data saved successfully'})
-            }
-        except Exception as err:
-            logging.error(str(err))
-            return {
-                'statusCode': 500,
-                'body': json.dumps({'error': 'Internal server error'})
-            }
+        return {
+            'statusCode': 200,
+            'body': json.dumps({'message': 'Data saved successfully'})
+        }
+
     except Exception as e:
         logging.error(str(e))
         return {
