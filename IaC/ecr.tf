@@ -24,3 +24,12 @@ resource "aws_ecr_repository" "restore-backup" {
     scan_on_push = false
   }
 }
+
+resource "aws_ecr_repository" "database-analytics" {
+  name                 = "database-analytics"
+  image_tag_mutability = "MUTABLE"
+
+  image_scanning_configuration {
+    scan_on_push = false
+  }
+}

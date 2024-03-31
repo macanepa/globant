@@ -12,6 +12,15 @@ def get_boto_session():
         return Session()
 
 
+def log_errors(count: int, event: dict):
+    try:
+        api_key_id = event['requestContext']['identity']['apiKeyId']
+        message = f'{api_key_id} >> records with errors: {count}'
+    except KeyError:
+        message = f'UNAUTHENTICATED >> records with errors: {count}'
+    logging.warning(message)
+
+
 def lambda_handler(event, context):
     try:
         session = get_boto_session()
@@ -42,6 +51,9 @@ def lambda_handler(event, context):
 
             df = df.dropna()
             count_correct_records = df.shape[0]
+
+            if count_incorrect_records > 0:
+                log_errors(count=count_incorrect_records, event=event)
 
             wr.mysql.to_sql(
                 df=df,
