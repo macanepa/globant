@@ -141,6 +141,12 @@ curl --request GET \
 
 - Ensure proper IAM (Identity and Access Management) permissions are set for accessing AWS resources. The use of aws-cli is recommended for setting up these credentials in your environment.
 
+## Architecture Diagram
+<div style="text-align:center;">
+    <img src="Data Architecture.svg" alt="Data Architecture" width="auto"/>
+</div>
+
+
 ## Contributors
 
 - Matías Cánepa
